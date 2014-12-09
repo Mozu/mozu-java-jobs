@@ -19,9 +19,9 @@ import com.mozu.jobs.models.SkipItems;
 public class SkipItemsDaoImpl extends AbstractJdbcBatchMetadataDao implements SkipItemsDao {
     private DataSource dataSource;
 
-    private final String insertStatement= "INSERT INTO SKIP_ITEMS (type, item, msg,runId,jobExecutionId,stepExecutionId, jobName ) VALUES(?,?,?,?,?,?,?)";
-    private final String deleteStatement= "DELETE FROM SKIP_ITEMS WHERE id=?";
-    private final String selectByJobIds = "SELECT * FROM SKIP_ITEMS WHERE jobExecutionId = ?";
+    private final String insertStatement= "INSERT INTO SpringBatch.SKIP_ITEMS (type, item, msg,runId,jobExecutionId,stepExecutionId, jobName ) VALUES(?,?,?,?,?,?,?)";
+    private final String deleteStatement= "DELETE FROM SpringBatch.SKIP_ITEMS WHERE id=?";
+    private final String selectByJobIds = "SELECT * FROM SpringBatch.SKIP_ITEMS WHERE jobExecutionId = ?";
     
     public SkipItemsDaoImpl () {
     }

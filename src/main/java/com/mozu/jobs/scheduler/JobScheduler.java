@@ -53,6 +53,7 @@ public class JobScheduler {
     private static final String TENANT_ID_KEY = "tenantId";
     private static final String SITE_ID_KEY = "siteId";
     private static final String JOB_NAME = "jobName";
+    private static final String QRTZ_TABLE_PREFIX = "QrtzJobs.QRTZ_";
 
     private static Scheduler scheduler = null;
     
@@ -72,6 +73,7 @@ public class JobScheduler {
     private static final String QRTZ_AQUIRE_TRIGGERS_IN_LOCK = "org.quartz.jobStore.acquireTriggersWithinLock";
     private static final String QRTZ_ISOLATION_SERIALIZABLE = "org.quartz.jobStore.txIsolationLevelSerializable";
     private static final String QRTZ_LOCK_CLASS =           "org.quartz.jobStore.lockHandler.class";
+    private static final String QRTZ_TABLE_PREFIX_PROP =    "org.quartz.jobStore.tablePrefix";
 
     @Value("${org.quartz.scheduler.instanceName}")
     String qrtz_instanceName;
@@ -144,7 +146,8 @@ public class JobScheduler {
         qrtzProperties.put(QRTZ_IS_CLUSTERED, new Boolean(true));
         qrtzProperties.put(QRTZ_AQUIRE_TRIGGERS_IN_LOCK, new Boolean(true));
         qrtzProperties.put(QRTZ_ISOLATION_SERIALIZABLE, new Boolean(true));
-        
+        qrtzProperties.put(QRTZ_TABLE_PREFIX_PROP, QRTZ_TABLE_PREFIX);
+       
         // start the scheduler
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
         try {

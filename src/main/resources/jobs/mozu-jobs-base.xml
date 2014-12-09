@@ -41,7 +41,8 @@
         <beans:property name="dataSource" ref="springDataSource" />
         <beans:property name="transactionManager" ref="transactionManager" />
         <beans:property name="databaseType" value="${databaseType}" />
-    </beans:bean>
+        <beans:property name="tablePrefix" value="SpringBatch.BATCH_" />
+        </beans:bean>
 
     <beans:bean id="transactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

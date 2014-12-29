@@ -25,6 +25,7 @@
 
     <beans:bean id="jobExplorer"
         class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
+        <beans:property name="tablePrefix" value="SpringBatch.BATCH_" />
         <beans:property name="dataSource" ref="springDataSource" />
     </beans:bean>
 

@@ -70,7 +70,9 @@ public class JobHandler {
         try {
             job = jobRegistry.getJob(jobName);
             // check to see if there is a current running job for this site.
-            jobExecution = getRunningJobExecution(tenantId.longValue(), siteId.longValue(), jobName);
+            Long siteIdLong = siteId != null ? siteId.longValue() : null;
+            Long tenantIdLong = tenantId != null ? tenantId.longValue() : null;
+            jobExecution = getRunningJobExecution(tenantIdLong,siteIdLong, jobName);
 
             if (jobExecution == null) {
                 jobExecution = jobLauncher.run(job, jobParams);

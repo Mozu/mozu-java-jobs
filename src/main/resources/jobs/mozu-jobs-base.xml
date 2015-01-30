@@ -66,4 +66,24 @@
         class="com.mozu.jobs.dao.SkipItemsDaoImpl">
         <beans:property name="dataSource" ref="springDataSource" />
     </beans:bean>
+
+    <!-- Spring Batch Admin for JMX --> 
+    <context:mbean-server id="mbeanServer" />
+    
+    <context:mbean-export default-domain="spring.application" server="mbeanServer"/>
+    
+    <beans:bean id="batchMBeanExporter" class="org.springframework.batch.admin.jmx.BatchMBeanExporter">
+        <beans:property name="server" ref="mbeanServer" />
+        <beans:property name="jobService" ref="jobService"/>
+        <beans:property name="defaultDomain" value="spring.application" />
+    </beans:bean>
+
+    <beans:bean id="jobService" class="org.springframework.batch.admin.service.SimpleJobServiceFactoryBean">
+        <beans:property name="jobRepository" ref="jobRepository" />
+        <beans:property name="jobLauncher" ref="jobLauncher" />
+        <beans:property name="jobLocator" ref="jobRegistry" />
+        <beans:property name="dataSource" ref="springDataSource" />
+        <beans:property name="tablePrefix" value="SpringBatch.BATCH_" />
+    </beans:bean>
+    
 </beans:beans>

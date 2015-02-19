@@ -450,7 +450,7 @@ public class JobScheduler {
      */
     public void updateJobFrequencySeconds(Integer tenantId, Integer siteId, Integer schedFrequencySeconds,
             String identity, Class jobClass) {
-        updateJob(tenantId, siteId, schedFrequencySeconds, identity, jobClass, false);
+        updateJob(tenantId, siteId, schedFrequencySeconds, identity, jobClass, true);
     }
     
     protected void updateJob (Integer tenantId, Integer siteId, Integer schedFrequency,

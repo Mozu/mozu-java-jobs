@@ -33,11 +33,11 @@ import org.springframework.stereotype.Component;
 import com.mozu.jobs.handlers.JobHandler;
 
 /**
- * Class to start and manage interactions with the Qrtz job scheduler
- * package. The scheduler is started by invoking the initialize method.
- * Scheduling is not active until this method is invoked. This class should
- * be treated as a singleton and instantiated once and maintained by
- * the project container (generally Spring)
+ * Class to start and manage interactions with the Qrtz job scheduler package.
+ * The scheduler is started by invoking the initialize method. Scheduling is not
+ * active until this method is invoked. This class should be treated as a
+ * singleton and instantiated once and maintained by the project container
+ * (generally Spring)
  * 
  * @author john_gatti
  *
@@ -56,24 +56,24 @@ public class JobScheduler {
     private static final String QRTZ_TABLE_PREFIX = "QrtzJobs.QRTZ_";
 
     private static Scheduler scheduler = null;
-    
-    private static final String QRTZ_INSTANCE_NAME_PROP =   "org.quartz.scheduler.instanceName";
-    private static final String QRTZ_JOB_STORE_PROP =       "org.quartz.jobStore.class";
+
+    private static final String QRTZ_INSTANCE_NAME_PROP = "org.quartz.scheduler.instanceName";
+    private static final String QRTZ_JOB_STORE_PROP = "org.quartz.jobStore.class";
     private static final String QRTZ_DRIVER_DELEGATE_PROP = "org.quartz.jobStore.driverDelegateClass";
-    private static final String QRTZ_DATASOURCE_PROP =      "org.quartz.jobStore.dataSource";
-    private static final String QRTZ_THREAD_POOL_PROP =     "org.quartz.threadPool.class";
-    private static final String QRTZ_THREAD_COUNT_PROP =    "org.quartz.threadPool.threadCount";
-    private static final String QRTZ_DRIVER_PROP =          "org.quartz.dataSource.mozu.driver";
-    private static final String QRTZ_URL_PROP =             "org.quartz.dataSource.mozu.URL";
-    private static final String QRTZ_USER_PROP =            "org.quartz.dataSource.mozu.user";
-    private static final String QRTZ_PASSWORD_PROP =        "org.quartz.dataSource.mozu.password";
+    private static final String QRTZ_DATASOURCE_PROP = "org.quartz.jobStore.dataSource";
+    private static final String QRTZ_THREAD_POOL_PROP = "org.quartz.threadPool.class";
+    private static final String QRTZ_THREAD_COUNT_PROP = "org.quartz.threadPool.threadCount";
+    private static final String QRTZ_DRIVER_PROP = "org.quartz.dataSource.mozu.driver";
+    private static final String QRTZ_URL_PROP = "org.quartz.dataSource.mozu.URL";
+    private static final String QRTZ_USER_PROP = "org.quartz.dataSource.mozu.user";
+    private static final String QRTZ_PASSWORD_PROP = "org.quartz.dataSource.mozu.password";
     private static final String QRTZ_MAX_CONNECTIONS_PROP = "org.quartz.dataSource.mozu.maxConnections";
-    private static final String QRTZ_INSTANCE_ID =          "org.quartz.scheduler.instanceId";
-    private static final String QRTZ_IS_CLUSTERED =         "org.quartz.jobStore.isClustered"; 
+    private static final String QRTZ_INSTANCE_ID = "org.quartz.scheduler.instanceId";
+    private static final String QRTZ_IS_CLUSTERED = "org.quartz.jobStore.isClustered";
     private static final String QRTZ_AQUIRE_TRIGGERS_IN_LOCK = "org.quartz.jobStore.acquireTriggersWithinLock";
     private static final String QRTZ_ISOLATION_SERIALIZABLE = "org.quartz.jobStore.txIsolationLevelSerializable";
-    private static final String QRTZ_LOCK_CLASS =           "org.quartz.jobStore.lockHandler.class";
-    private static final String QRTZ_TABLE_PREFIX_PROP =    "org.quartz.jobStore.tablePrefix";
+    private static final String QRTZ_LOCK_CLASS = "org.quartz.jobStore.lockHandler.class";
+    private static final String QRTZ_TABLE_PREFIX_PROP = "org.quartz.jobStore.tablePrefix";
 
     @Value("${org.quartz.scheduler.instanceName}")
     String qrtz_instanceName;
@@ -107,21 +107,21 @@ public class JobScheduler {
 
     @Value("${org.quartz.dataSource.mozu.maxConnections}")
     String qrtz_maxConnections;
-    
+
     @Value("${org.quartz.jobStore.lockHandler.class}")
     String qrtz_lockHandlerClass;
 
     @Autowired
     JobHandler jobHandler;
-    
+
     public JobScheduler() {
     }
 
     /**
      * Start the Quartz scheduler.
      * 
-     * The jobHandler class is called when the trigger fires. The 
-     * class sets the Spring Batch context for the job.  
+     * The jobHandler class is called when the trigger fires. The class sets the
+     * Spring Batch context for the job.
      */
     @PostConstruct
     public void initialize() {
@@ -139,7 +139,7 @@ public class JobScheduler {
         qrtzProperties.put(QRTZ_PASSWORD_PROP, qrtz_password);
         qrtzProperties.put(QRTZ_MAX_CONNECTIONS_PROP, qrtz_maxConnections);
         qrtzProperties.put(QRTZ_LOCK_CLASS, qrtz_lockHandlerClass);
-        
+
         // Force these values, all instances must have these set or it
         // may cause data corruption
         qrtzProperties.put(QRTZ_INSTANCE_ID, "Auto");
@@ -147,7 +147,7 @@ public class JobScheduler {
         qrtzProperties.put(QRTZ_AQUIRE_TRIGGERS_IN_LOCK, new Boolean(true));
         qrtzProperties.put(QRTZ_ISOLATION_SERIALIZABLE, new Boolean(true));
         qrtzProperties.put(QRTZ_TABLE_PREFIX_PROP, QRTZ_TABLE_PREFIX);
-       
+
         // start the scheduler
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
         try {
@@ -172,395 +172,514 @@ public class JobScheduler {
     }
 
     /**
-     * Add a job to be scheduled. Jobs are scheduled at the offset minutes past the hour
-     * at the hour frequency specified. If the hour frequency is 24 hours, schedule
-     * once per day at 23:00 plus the minute offset.
+     * Add a job to be scheduled. Jobs are scheduled at the offset minutes past
+     * the hour at the hour frequency specified. If the hour frequency is 24
+     * hours, schedule once per day at 23:00 plus the minute offset.
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant (optional)
-     * @param schedFrequencyHours repeat interval in hours.
-     * @param offset Number of minutes after the our that the scedhule should be offset
-     * @param identity A name used to identify the trigger group
-     * @param jobClass Class to be invoked when the schedule fires. This class must
-     *  implement org.qrtz.Job
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param schedFrequencyHours
+     *            repeat interval in hours.
+     * @param offset
+     *            Number of minutes after the our that the scedhule should be
+     *            offset
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
+     *            implement org.qrtz.Job
      */
-    public void addJob(Integer tenantId, Integer siteId, Integer schedFrequencyHours, Integer offset, String identity, Class jobClass) {
+    public void addJob(Integer tenantId, Integer siteId, Integer schedFrequencyHours,
+            Integer offset, String identity, Class jobClass) {
 
-        if (scheduler==null)
+        if (scheduler == null)
             throw new IllegalStateException("Scheduler not initialized");
-        
-        if (tenantId==null || schedFrequencyHours==null || offset==null || identity==null || jobClass==null)
+
+        if (tenantId == null || schedFrequencyHours == null || offset == null || identity == null
+                || jobClass == null)
             throw new IllegalArgumentException();
-        
-        if (schedFrequencyHours<=0 || schedFrequencyHours>24) {
+
+        if (schedFrequencyHours <= 0 || schedFrequencyHours > 24) {
             String errMsg = "Atttempt to schedule sync at an invalid frequency ";
             logger.warn(errMsg);
             throw new IllegalArgumentException(errMsg);
         }
-        
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
-        
-        JobDetail job = JobBuilder.newJob(jobClass)
-                .withIdentity(identity+JOB, tenantIdString)
+
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
+
+        JobDetail job = JobBuilder.newJob(jobClass).withIdentity(identity + JOB, tenantIdString)
                 .build();
 
         Trigger trigger = createTrigger(schedFrequencyHours, offset, tenantId, siteId, identity);
-        
+
         try {
             scheduler.scheduleJob(job, trigger);
             logger.debug("Scheduled job for tenant " + tenantIdString);
         } catch (SchedulerException e) {
-            logger.info("Qrtz job schedule job failure for tenant " + tenantIdString + " Error is: " + e.getMessage());
+            logger.info("Qrtz job schedule job failure for tenant " + tenantIdString
+                    + " Error is: " + e.getMessage());
         }
     }
 
     /**
-     * Add a job to be scheduled. The job is scheduled at a repeatable frequency in minutes
-     * with start time/offset immediately.
+     * Add a job to be scheduled. The job is scheduled at a repeatable frequency
+     * in minutes with start time/offset immediately.
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant (optional)
-     * @param schedFrequencyMinutes repeat interval in minutes.
-     * @param identity A name used to identify the trigger group
-     * @param jobClass Class to be invoked when the schedule fires. This class must
-     *  implement org.qrtz.Job
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param schedFrequencyMinutes
+     *            repeat interval in minutes.
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
+     *            implement org.qrtz.Job
      */
-    public void addJob(Integer tenantId, Integer siteId, Integer schedFrequencyMinutes, String identity, Class jobClass) {
+    public void addJob(Integer tenantId, Integer siteId, Integer schedFrequencyMinutes,
+            String identity, Class jobClass) {
+        addJob(tenantId, siteId, schedFrequencyMinutes, identity, jobClass, false);
+    }    
 
-        if (scheduler==null)
+    /**
+     * Add a job to be scheduled. The job is scheduled at a repeatable frequency
+     * in minutes with start time/offset immediately.
+     * 
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param schedFrequency
+     *            repeat interval in minutes or seconds.
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
+     *            implement org.qrtz.Job
+     * @param isFrequencyInSeconds whether the schedFrequency is in minutes or seconds           
+     */    
+    public void addJob(Integer tenantId, Integer siteId, Integer schedFrequency,
+            String identity, Class jobClass, boolean isFrequencyInSeconds) {
+
+        if (scheduler == null)
             throw new IllegalStateException("Scheduler not initialized");
-        
-        if (tenantId==null || schedFrequencyMinutes==null || identity==null || jobClass==null)
+
+        if (tenantId == null || schedFrequency == null || identity == null
+                || jobClass == null)
             throw new IllegalArgumentException();
-        
-        if (schedFrequencyMinutes<=0) {
-            String errMsg = "Atttempt to schedule sync at an invalid frequency ";
+
+        if (schedFrequency <= 0) {
+            String errMsg = "Atttempt to schedule sync at an invalid frequency. It must be a positive number ";
             logger.warn(errMsg);
             throw new IllegalArgumentException(errMsg);
         }
-        
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
-        
-        JobDetail job = JobBuilder.newJob(jobClass)
-                .withIdentity(identity+JOB, tenantIdString)
+
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
+
+        JobDetail job = JobBuilder.newJob(jobClass).withIdentity(identity + JOB, tenantIdString)
                 .build();
 
-        Trigger trigger = createTrigger(schedFrequencyMinutes, tenantId, siteId, identity);
-        
+        Trigger trigger = createTrigger(schedFrequency, tenantId, siteId, identity, isFrequencyInSeconds);
+
         try {
             scheduler.scheduleJob(job, trigger);
             logger.debug("Scheduled job for tenant " + tenantIdString);
         } catch (SchedulerException e) {
-            logger.info("Qrtz job schedule job failure for tenant " + tenantIdString + " Error is: " + e.getMessage());
+            logger.info("Qrtz job schedule job failure for tenant " + tenantIdString
+                    + " Error is: " + e.getMessage());
         }
+    }
+
+    /**
+     * Add a job to be scheduled. The job is scheduled at a repeatable frequency
+     * in minutes with start time/offset immediately.
+     * 
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param schedFrequencySeconds
+     *            repeat interval in minutes.
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
+     *            implement org.qrtz.Job
+     */
+    public void addJobFrequencyInSeconds(Integer tenantId, Integer siteId,
+            Integer schedFrequencySeconds, String identity, Class jobClass) {
+        addJob(tenantId, siteId, schedFrequencySeconds, identity, jobClass, true);
     }
 
     /**
      * Add a job to be scheduled. Jobs are scheduled at 15 minutes past the hour
-     * at the hour frequency specified. If the hour frequency is 24 hours, schedule
-     * once per day at 11:15 pm.
+     * at the hour frequency specified. If the hour frequency is 24 hours,
+     * schedule once per day at 11:15 pm.
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant (optional)
-     * @param hours hour of the day the job is to run
-     * @param minutes minutes after the hour that the job will run
-     * @param identity A name used to identify the trigger group
-     * @param jobClass Class to be invoked when the schedule fires. This class must
-     *  implement org.qrtz.Job
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param hours
+     *            hour of the day the job is to run
+     * @param minutes
+     *            minutes after the hour that the job will run
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
+     *            implement org.qrtz.Job
      */
-    public void addDailyJob(Integer tenantId, Integer siteId, String hours,
-            String minutes, String timezone, String identity, Class jobClass) {
+    public void addDailyJob(Integer tenantId, Integer siteId, String hours, String minutes,
+            String timezone, String identity, Class jobClass) {
 
-        if (scheduler==null)
+        if (scheduler == null)
             throw new IllegalStateException("Scheduler not initialized");
-        
-        if (tenantId==null || hours==null || minutes==null || identity==null || jobClass==null)
+
+        if (tenantId == null || hours == null || minutes == null || identity == null
+                || jobClass == null)
             throw new IllegalArgumentException();
-        
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
-        
-        JobDetail job = JobBuilder.newJob(jobClass)
-                .withIdentity(identity+JOB, tenantIdString)
+
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
+
+        JobDetail job = JobBuilder.newJob(jobClass).withIdentity(identity + JOB, tenantIdString)
                 .build();
 
         Trigger trigger = createCronTrigger(hours, minutes, timezone, tenantId, siteId, identity);
-        
+
         try {
             scheduler.scheduleJob(job, trigger);
             logger.debug("Scheduled job for tenant " + tenantIdString);
         } catch (SchedulerException e) {
-            logger.info("Qrtz job schedule job failure for tenant " + tenantIdString + " Error is: " + e.getMessage());
+            logger.info("Qrtz job schedule job failure for tenant " + tenantIdString
+                    + " Error is: " + e.getMessage());
         }
     }
 
     /**
-     * Delete a previously scheduled sync job. If the job does not exist, log
-     * it but do not throw an error
+     * Delete a previously scheduled sync job. If the job does not exist, log it
+     * but do not throw an error
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant (optional)
-     * @param identity A name used to identify the trigger group
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param identity
+     *            A name used to identify the trigger group
      */
     public void delJob(Integer tenantId, Integer siteId, String identity) {
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
 
-        if (scheduler==null)
+        if (scheduler == null)
             throw new IllegalStateException("Scheduler not initialized");
-        
-        if (tenantId==null || identity==null)
+
+        if (tenantId == null || identity == null)
             throw new IllegalArgumentException();
-        
-        JobKey jobKey = new JobKey(identity+JOB, tenantIdString);
+
+        JobKey jobKey = new JobKey(identity + JOB, tenantIdString);
         try {
             scheduler.deleteJob(jobKey);
             logger.debug("Deleted scheduled job for tenant " + tenantIdString);
         } catch (SchedulerException e) {
-            logger.info("Qrtz job not deleted for tenant " + tenantIdString + " Error is: " + e.getMessage());
+            logger.info("Qrtz job not deleted for tenant " + tenantIdString + " Error is: "
+                    + e.getMessage());
         }
     }
 
     /**
      * Update an existing scheduled job's repeat interval.
      * 
-     * Update consists of deleting the old schedule and adding it again with the new trigger
+     * Update consists of deleting the old schedule and adding it again with the
+     * new trigger
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant
-     * @param schedFrequencyHours repeat interval in hours.
-     * @param offset Number of minutes after the our that the scedhule should be offset
-     * @param identity A name used to identify the trigger group
-     * @param jobClass Class to be invoked when the schedule fires. This class must
-     *  implement org.qrtz.Job
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant
+     * @param schedFrequencyHours
+     *            repeat interval in hours.
+     * @param offset
+     *            Number of minutes after the our that the scedhule should be
+     *            offset
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
+     *            implement org.qrtz.Job
      */
-    public void updateJob(Integer tenantId, Integer siteId, Integer schedFrequencyMinutes, String identity, Class jobClass ) {
+    public void updateJob(Integer tenantId, Integer siteId, Integer schedFrequencyMinutes,
+            String identity, Class jobClass) {
+    }    
 
-        if (scheduler==null)
+    public void updateJobFrequencySeconds(Integer tenantId, Integer siteId, Integer schedFrequencySeconds,
+            String identity, Class jobClass) {
+    }
+    
+    protected void updateJob (Integer tenantId, Integer siteId, Integer schedFrequency,
+            String identity, Class jobClass, boolean isInSeconds) {
+    
+        if (scheduler == null)
             throw new IllegalStateException("Scheduler not initialized");
-        
-        if (tenantId==null || schedFrequencyMinutes==null || identity==null || jobClass==null)
+
+        if (tenantId == null || schedFrequency == null || identity == null
+                || jobClass == null)
             throw new IllegalArgumentException();
-        
-        if (schedFrequencyMinutes<=0) {
-            String errMsg = "Atttempt to schedule sync at an invalid frequency ";
+
+        if (schedFrequency <= 0) {
+            String errMsg = "Attempt to schedule sync at an invalid frequency ";
             logger.warn(errMsg);
             throw new IllegalArgumentException(errMsg);
         }
 
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
-        
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
+
         // read the old job trigger
         try {
-            Trigger trigger = scheduler.getTrigger(new TriggerKey(identity+TRIGGER, tenantIdString));
+            Trigger trigger = scheduler.getTrigger(new TriggerKey(identity + TRIGGER,
+                    tenantIdString));
             if (trigger != null) {
                 delJob(tenantId, siteId, identity);
             }
         } catch (SchedulerException e) {
             logger.info("Previous trigger not found for " + tenantId);
         }
-        
-        addJob(tenantId, siteId, schedFrequencyMinutes, identity, jobClass);
+
+        addJob(tenantId, siteId, schedFrequency, identity, jobClass, isInSeconds);
     }
-    
+
     /**
      * Update an existing scheduled job's repeat interval and offset.
      * 
-     * Update consists of deleting the old schedule and adding it again with the new trigger
+     * Update consists of deleting the old schedule and adding it again with the
+     * new trigger
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant
-     * @param schedFrequencyHours repeat interval in hours.
-     * @param offset Number of minutes after the our that the scedhule should be offset
-     * @param identity A name used to identify the trigger group
-     * @param jobClass Class to be invoked when the schedule fires. This class must
-     *  implement org.qrtz.Job
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant
+     * @param schedFrequencyHours
+     *            repeat interval in hours.
+     * @param offset
+     *            Number of minutes after the our that the scedhule should be
+     *            offset
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
+     *            implement org.qrtz.Job
      */
-    public void updateJob(Integer tenantId, Integer siteId, Integer schedFrequencyHours, Integer offset, String identity, Class jobClass ) {
+    public void updateJob(Integer tenantId, Integer siteId, Integer schedFrequencyHours,
+            Integer offset, String identity, Class jobClass) {
 
-        if (scheduler==null)
+        if (scheduler == null)
             throw new IllegalStateException("Scheduler not initialized");
-        
-        if (tenantId==null || schedFrequencyHours==null || offset==null || identity==null || jobClass==null)
+
+        if (tenantId == null || schedFrequencyHours == null || offset == null || identity == null
+                || jobClass == null)
             throw new IllegalArgumentException();
-        
-        if (schedFrequencyHours<=0 || schedFrequencyHours>24) {
+
+        if (schedFrequencyHours <= 0 || schedFrequencyHours > 24) {
             String errMsg = "Atttempt to schedule sync at an invalid frequency ";
             logger.warn(errMsg);
             throw new IllegalArgumentException(errMsg);
         }
 
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
-        
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
+
         // read the old job trigger
         try {
-            Trigger trigger = scheduler.getTrigger(new TriggerKey(identity+TRIGGER, tenantIdString));
+            Trigger trigger = scheduler.getTrigger(new TriggerKey(identity + TRIGGER,
+                    tenantIdString));
             if (trigger != null) {
                 delJob(tenantId, siteId, identity);
             }
         } catch (SchedulerException e) {
             logger.info("Previous trigger not found for " + tenantId);
         }
-        
+
         addJob(tenantId, siteId, schedFrequencyHours, offset, identity, jobClass);
     }
-    
+
     /**
-     * Update an existing scheduled job's repeat interval if the interval has changed. The
-     * action defaults to not update. If there is not an existing schedule, the app has not
-     * been enabled yet and therefore a trigger/job is not defined.
+     * Update an existing scheduled job's repeat interval if the interval has
+     * changed. The action defaults to not update. If there is not an existing
+     * schedule, the app has not been enabled yet and therefore a trigger/job is
+     * not defined.
      * 
-     * Update consists of deleting the old schedule and adding it again with the new trigger
+     * Update consists of deleting the old schedule and adding it again with the
+     * new trigger
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant (optional)
-     * @param hours hour of the day the job is to run
-     * @param minutes minutes after the hour that the job will run
-     * @param identity A name used to identify the trigger group
-     * @param jobClass Class to be invoked when the schedule fires. This class must
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param hours
+     *            hour of the day the job is to run
+     * @param minutes
+     *            minutes after the hour that the job will run
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
      */
-    public void updateJob(Integer tenantId, Integer siteId, String hours, String minutes, 
-            String timezone, String identity, Class jobClass ) {
+    public void updateJob(Integer tenantId, Integer siteId, String hours, String minutes,
+            String timezone, String identity, Class jobClass) {
         if (StringUtils.isBlank(hours) || StringUtils.isBlank(minutes)) {
             String errMsg = "Atttempt to update sync schedule to an invalid time";
             logger.warn(errMsg);
             throw new IllegalArgumentException(errMsg);
         }
 
-        if (scheduler==null)
+        if (scheduler == null)
             throw new IllegalStateException("Scheduler not initialized");
-        
-        if (tenantId==null || hours==null || minutes==null || identity==null || jobClass==null)
+
+        if (tenantId == null || hours == null || minutes == null || identity == null
+                || jobClass == null)
             throw new IllegalArgumentException();
-        
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
-        
+
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
+
         // read the old job trigger
         try {
-            Trigger trigger = scheduler.getTrigger(new TriggerKey(identity+TRIGGER, tenantIdString));
+            Trigger trigger = scheduler.getTrigger(new TriggerKey(identity + TRIGGER,
+                    tenantIdString));
             if (trigger != null) {
                 delJob(tenantId, siteId, identity);
             }
         } catch (SchedulerException e) {
             logger.info("Previous trigger not found for " + tenantId);
         }
-        
+
         addDailyJob(tenantId, siteId, hours, minutes, timezone, identity, jobClass);
     }
 
     /**
      * Get the named Qrtz trigger
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant (optional)
-     * @param identity A name used to identify the trigger group
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param identity
+     *            A name used to identify the trigger group
      * @return Qrtz trigger
      * @throws SchedulerException
      */
-    public Trigger getTrigger(Integer tenantId, Integer siteId, String identity) throws SchedulerException {
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
+    public Trigger getTrigger(Integer tenantId, Integer siteId, String identity)
+            throws SchedulerException {
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
 
-        if (scheduler==null) {
+        if (scheduler == null) {
             throw new IllegalStateException("Scheduler not initialized");
         }
-        
-        return scheduler.getTrigger(new TriggerKey(identity+TRIGGER, tenantIdString));
+
+        return scheduler.getTrigger(new TriggerKey(identity + TRIGGER, tenantIdString));
     }
-    
+
     /**
      * Get the named Qrtz job
      * 
-     * @param tenantId Id of the tenant for this job. Used in the trigger and job keys
-     * @param siteId Id of the site on this tenant (optional)
-     * @param identity A name used to identify the trigger group
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant (optional)
+     * @param identity
+     *            A name used to identify the trigger group
      * @return Qrtz JobDetail
      * @throws SchedulerException
      */
-    public JobDetail getJob(Integer tenantId, Integer siteId, String identity) throws SchedulerException {
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
+    public JobDetail getJob(Integer tenantId, Integer siteId, String identity)
+            throws SchedulerException {
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
 
-        if (scheduler==null) {
+        if (scheduler == null) {
             throw new IllegalStateException("Scheduler not initialized");
         }
-        
-        return scheduler.getJobDetail(new JobKey(identity+JOB, tenantIdString));
+
+        return scheduler.getJobDetail(new JobKey(identity + JOB, tenantIdString));
     }
-    
-    private Trigger createTrigger(Integer schedFrequencyHours, Integer offset, Integer tenantId, Integer siteId, String identity) {
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
-        
+
+    private Trigger createTrigger(Integer schedFrequencyHours, Integer offset, Integer tenantId,
+            Integer siteId, String identity) {
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
+
         Trigger trigger = null;
-        if (schedFrequencyHours.intValue()==24) {
+        if (schedFrequencyHours.intValue() == 24) {
             // use a Cron scheduler so it runs daily at 23:15 and is
             // not thrown by DST changes.
-            return createCronTrigger(
-                    new Integer(HOUR_OF_DAY).toString(), 
-                    new Integer(offset).toString(), 
-                    Calendar.getInstance().getTimeZone().getID(),  
+            return createCronTrigger(new Integer(HOUR_OF_DAY).toString(),
+                    new Integer(offset).toString(), Calendar.getInstance().getTimeZone().getID(),
                     tenantId, siteId, identity);
         } else {
             // use a simple schedule at 15 minutes past the hour
-            trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(identity+TRIGGER, tenantIdString)
-                    .withSchedule(
-                            SimpleScheduleBuilder.repeatHourlyForever(schedFrequencyHours)
-                            )
-                    .startAt(DateBuilder.newDate()
-                            .atMinute(offset)
-                            .build())
-                    .usingJobData(TENANT_ID_KEY, tenantId)
-                    .usingJobData(SITE_ID_KEY, siteId)
-                    .usingJobData(JOB_NAME, identity)
-                    .build();
+            trigger = TriggerBuilder.newTrigger().withIdentity(identity + TRIGGER, tenantIdString)
+                    .withSchedule(SimpleScheduleBuilder.repeatHourlyForever(schedFrequencyHours))
+                    .startAt(DateBuilder.newDate().atMinute(offset).build())
+                    .usingJobData(TENANT_ID_KEY, tenantId).usingJobData(SITE_ID_KEY, siteId)
+                    .usingJobData(JOB_NAME, identity).build();
         }
         return trigger;
     }
-    
-    private Trigger createTrigger(Integer schedFrequencyMinutes, Integer tenantId, Integer siteId, String identity) {
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
-        
+
+    private Trigger createTrigger(Integer schedFrequency, Integer tenantId, Integer siteId,
+            String identity, boolean frequencyInSeconds) {
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
+
         Trigger trigger = null;
-        trigger = TriggerBuilder.newTrigger()
-                .withIdentity(identity+TRIGGER, tenantIdString)
-                .withSchedule(
-                        SimpleScheduleBuilder.repeatMinutelyForever(schedFrequencyMinutes)
-                        )
-                .startAt(DateBuilder.newDate()
-                        .build())
-                .usingJobData(TENANT_ID_KEY, tenantId)
-                .usingJobData(SITE_ID_KEY, siteId)
-                .usingJobData(JOB_NAME, identity)
-                .build();
+        TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger()
+                .withIdentity(identity + TRIGGER, tenantIdString)
+                .startAt(DateBuilder.newDate().build()).usingJobData(TENANT_ID_KEY, tenantId)
+                .usingJobData(SITE_ID_KEY, siteId).usingJobData(JOB_NAME, identity);
+        if (frequencyInSeconds) {
+            triggerBuilder.withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(schedFrequency));
+        } else {
+            triggerBuilder.withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(schedFrequency));
+        }
+
+        trigger = triggerBuilder.build();
         return trigger;
     }
 
     private Trigger createCronTrigger(String hours, String minutes, String timezone,
             Integer tenantId, Integer siteId, String identity) {
-        String tenantIdString = tenantId.toString() + 
-                ((siteId!=null)?"_" + siteId.toString():"");
+        String tenantIdString = tenantId.toString()
+                + ((siteId != null) ? "_" + siteId.toString() : "");
 
         TimeZone tz = TimeZone.getTimeZone(timezone);
 
         // Create a cron trigger
-        Trigger trigger = TriggerBuilder.newTrigger()
-            .withIdentity(identity+TRIGGER, tenantIdString)
-            .withSchedule(
-                    CronScheduleBuilder.cronSchedule("0 " + minutes + " " + hours + " * * ?" )
-                    .inTimeZone(tz)
-                    )
-            .usingJobData(TENANT_ID_KEY, tenantId)
-            .usingJobData(SITE_ID_KEY, siteId)
-            .usingJobData(JOB_NAME, identity)
-            .build();
+        Trigger trigger = TriggerBuilder
+                .newTrigger()
+                .withIdentity(identity + TRIGGER, tenantIdString)
+                .withSchedule(
+                        CronScheduleBuilder.cronSchedule("0 " + minutes + " " + hours + " * * ?")
+                                .inTimeZone(tz)).usingJobData(TENANT_ID_KEY, tenantId)
+                .usingJobData(SITE_ID_KEY, siteId).usingJobData(JOB_NAME, identity).build();
         return trigger;
     }
 }

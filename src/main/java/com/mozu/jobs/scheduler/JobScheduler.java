@@ -410,8 +410,8 @@ public class JobScheduler {
      *            keys
      * @param siteId
      *            Id of the site on this tenant
-     * @param schedFrequencyHours
-     *            repeat interval in hours.
+     * @param schedFrequencyMinutes
+     *            repeat interval in minutes.
      * @param offset
      *            Number of minutes after the our that the scedhule should be
      *            offset
@@ -423,10 +423,34 @@ public class JobScheduler {
      */
     public void updateJob(Integer tenantId, Integer siteId, Integer schedFrequencyMinutes,
             String identity, Class jobClass) {
+        updateJob(tenantId, siteId, schedFrequencyMinutes, identity, jobClass, false);
     }    
 
+    /**
+     * Update an existing scheduled job's repeat interval.
+     * 
+     * Update consists of deleting the old schedule and adding it again with the
+     * new trigger
+     * 
+     * @param tenantId
+     *            Id of the tenant for this job. Used in the trigger and job
+     *            keys
+     * @param siteId
+     *            Id of the site on this tenant
+     * @param schedFrequencySeconds
+     *            repeat interval in seconds.
+     * @param offset
+     *            Number of minutes after the our that the scedhule should be
+     *            offset
+     * @param identity
+     *            A name used to identify the trigger group
+     * @param jobClass
+     *            Class to be invoked when the schedule fires. This class must
+     *            implement org.qrtz.Job
+     */
     public void updateJobFrequencySeconds(Integer tenantId, Integer siteId, Integer schedFrequencySeconds,
             String identity, Class jobClass) {
+        updateJob(tenantId, siteId, schedFrequencySeconds, identity, jobClass, true);
     }
     
     protected void updateJob (Integer tenantId, Integer siteId, Integer schedFrequency,

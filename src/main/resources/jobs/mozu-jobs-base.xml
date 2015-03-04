@@ -67,15 +67,16 @@
         <beans:property name="dataSource" ref="springDataSource" />
     </beans:bean>
 
-    <!-- Spring Batch Admin for JMX --> 
+    <!-- Spring Batch Admin for JMX -->
     <context:mbean-server id="mbeanServer" />
     
-    <context:mbean-export default-domain="spring.application" server="mbeanServer"/>
+    <context:mbean-export default-domain="${ApplicationId}.spring.application" server="mbeanServer"/>
     
     <beans:bean id="batchMBeanExporter" class="org.springframework.batch.admin.jmx.BatchMBeanExporter">
         <beans:property name="server" ref="mbeanServer" />
         <beans:property name="jobService" ref="jobService"/>
-        <beans:property name="defaultDomain" value="spring.application" />
+        <beans:property name="defaultDomain" value="${ApplicationId}.spring.application" />
+        <beans:property name="registrationBehaviorName" value="REGISTRATION_IGNORE_EXISTING" />
     </beans:bean>
 
     <beans:bean id="jobService" class="org.springframework.batch.admin.service.SimpleJobServiceFactoryBean">

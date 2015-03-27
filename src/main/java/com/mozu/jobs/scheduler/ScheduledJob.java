@@ -68,7 +68,7 @@ public class ScheduledJob implements Job {
     @Override
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
-        logger.info("Qrtz scheduled ratings import job");
+        logger.info("Qrtz scheduled " + jobName + " job");
         SchedulerContext schedulerContext = null;
         try {
             schedulerContext = context.getScheduler().getContext();
@@ -77,7 +77,7 @@ public class ScheduledJob implements Job {
             jobExecution = jobHandler.executeJob(tenantId, siteId, jobParams, jobName);
             System.out.println("JobExecutionId " + jobExecution.getId());
         } catch (SchedulerException e1) {
-            logger.error("Error executing ratings import job");
+            logger.error("Error executing " + jobName + " job " + e1.getMessage() );
         }
     }
 

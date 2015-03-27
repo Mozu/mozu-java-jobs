@@ -51,11 +51,12 @@
     </beans:bean>
 
     <beans:bean id="springDataSource"
-        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        class="com.mozu.jobs.jdbc.datasource.MozuDriverManagerDataSource">
         <beans:property name="driverClassName" value="${jdbc.driverClassName}" />
         <beans:property name="url" value="${db_url}" />
         <beans:property name="username" value="${db_username}" />
         <beans:property name="password" value="${db_password}" />
+        <beans:property name="spiceKey" value="${spice}" />
     </beans:bean>
 
     <beans:bean id="jobExecutionDao" class="com.mozu.jobs.dao.JobExecutionDaoImpl">

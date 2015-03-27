@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.mozu.encryptor.EncryptionUtil;
+import com.mozu.encryptor.PropertyEncryptionUtil;
 import com.mozu.jobs.handlers.JobHandler;
 
 /**
@@ -110,6 +112,9 @@ public class JobScheduler {
 
     @Value("${org.quartz.jobStore.lockHandler.class}")
     String qrtz_lockHandlerClass;
+    
+    @Value ("${spice}")
+    String spiceKey;
 
     @Autowired
     JobHandler jobHandler;
@@ -136,7 +141,7 @@ public class JobScheduler {
         qrtzProperties.put(QRTZ_DRIVER_PROP, qrtz_driver);
         qrtzProperties.put(QRTZ_URL_PROP, qrtz_URL);
         qrtzProperties.put(QRTZ_USER_PROP, qrtz_user);
-        qrtzProperties.put(QRTZ_PASSWORD_PROP, qrtz_password);
+        qrtzProperties.put(QRTZ_PASSWORD_PROP, PropertyEncryptionUtil.decryptProperty(spiceKey, qrtz_password));
         qrtzProperties.put(QRTZ_MAX_CONNECTIONS_PROP, qrtz_maxConnections);
         qrtzProperties.put(QRTZ_LOCK_CLASS, qrtz_lockHandlerClass);
 

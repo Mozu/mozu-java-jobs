@@ -702,27 +702,23 @@ public class JobScheduler {
 
         TimeZone tz = TimeZone.getTimeZone(timezone);
         
-        Integer[] randomNumbers=getRandomNumber();
-        minutes=String.valueOf(Integer.parseInt(minutes )+randomNumbers[0]);
-        String seconds=randomNumbers[1].toString();
+        int randomNumber=getRandomNumber();
+        int updatedMinutes=Integer.parseInt(minutes )+randomNumber / 60;
+        int seconds=randomNumber % 60;
         
         // Create a cron trigger
         Trigger trigger = TriggerBuilder
                 .newTrigger()
                 .withIdentity(identity + TRIGGER, tenantIdString)
                 .withSchedule(
-                        CronScheduleBuilder.cronSchedule( seconds+ " " + minutes + " " + hours + " * * ?")
+                        CronScheduleBuilder.cronSchedule( seconds+ " " + updatedMinutes + " " + hours + " * * ?")
                                 .inTimeZone(tz)).usingJobData(TENANT_ID_KEY, tenantId)
                 .usingJobData(SITE_ID_KEY, siteId).usingJobData(JOB_NAME, identity).build();
         return trigger;
     }
     
-    private Integer[] getRandomNumber(){
-    	Integer[] randomNumbers=new Integer[2];
+    private int getRandomNumber(){
     	SecureRandom sc= new SecureRandom();
-        int randomNumber=sc.nextInt(300);
-        randomNumbers[0]=randomNumber / 60;
-        randomNumbers[1]=randomNumber % 60;
-		return randomNumbers;
-    }
+        return sc.nextInt(300);
+  }
 }

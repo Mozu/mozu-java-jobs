@@ -4,6 +4,7 @@
 
 package com.mozu.jobs.scheduler;
 
+import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -700,15 +701,24 @@ public class JobScheduler {
                 + ((siteId != null) ? "_" + siteId.toString() : "");
 
         TimeZone tz = TimeZone.getTimeZone(timezone);
-
+        
+        int randomNumber=getRandomNumber();
+        int updatedMinutes=Integer.parseInt(minutes )+randomNumber / 60;
+        int seconds=randomNumber % 60;
+        
         // Create a cron trigger
         Trigger trigger = TriggerBuilder
                 .newTrigger()
                 .withIdentity(identity + TRIGGER, tenantIdString)
                 .withSchedule(
-                        CronScheduleBuilder.cronSchedule("0 " + minutes + " " + hours + " * * ?")
+                        CronScheduleBuilder.cronSchedule( seconds+ " " + updatedMinutes + " " + hours + " * * ?")
                                 .inTimeZone(tz)).usingJobData(TENANT_ID_KEY, tenantId)
                 .usingJobData(SITE_ID_KEY, siteId).usingJobData(JOB_NAME, identity).build();
         return trigger;
     }
+    
+    private int getRandomNumber(){
+    	SecureRandom sc= new SecureRandom();
+        return sc.nextInt(300);
+  }
 }

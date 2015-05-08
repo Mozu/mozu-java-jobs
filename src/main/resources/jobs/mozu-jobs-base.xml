@@ -43,7 +43,8 @@
         <beans:property name="transactionManager" ref="transactionManager" />
         <beans:property name="databaseType" value="${databaseType}" />
         <beans:property name="tablePrefix" value="SpringBatch.BATCH_" />
-        </beans:bean>
+        <property name="isolationLevelForCreate" value="ISOLATION_REPEATABLE_READ" />
+    </beans:bean>
 
     <beans:bean id="transactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

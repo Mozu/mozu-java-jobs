@@ -65,7 +65,7 @@ dependencies {
     compile ("org.springframework.batch:spring-batch-core:2.2.3.RELEASE");
     compile ("org.springframework.integration:spring-integration-core:3.0.2.RELEASE");
 
-    compile ('com.mozu:mozu-java-security:1.0.0')
+    compile ('com.mozu:mozu-java-security:1.0.2')
     compile "org.apache.commons:commons-lang3:3.2.1"
 	compile ("org.slf4j:slf4j-api:1.7.5")
 	compile ("org.slf4j:slf4j-log4j12:1.7.5")

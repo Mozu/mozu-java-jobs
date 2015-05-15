@@ -114,7 +114,7 @@ public class JobScheduler {
     @Value("${org.quartz.jobStore.lockHandler.class}")
     String qrtz_lockHandlerClass;
     
-    @Value ("${spice}")
+    @Value ("${spice: }")
     String spiceKey;
 
     @Autowired

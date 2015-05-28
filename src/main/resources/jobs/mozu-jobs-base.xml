@@ -43,7 +43,7 @@
         <beans:property name="transactionManager" ref="transactionManager" />
         <beans:property name="databaseType" value="${databaseType}" />
         <beans:property name="tablePrefix" value="SpringBatch.BATCH_" />
-        <property name="isolationLevelForCreate" value="ISOLATION_REPEATABLE_READ" />
+        <beans:property name="isolationLevelForCreate" value="ISOLATION_REPEATABLE_READ" />
     </beans:bean>
 
     <beans:bean id="transactionManager"
@@ -57,7 +57,7 @@
         <beans:property name="url" value="${db_url}" />
         <beans:property name="username" value="${db_username}" />
         <beans:property name="password" value="${db_password}" />
-        <beans:property name="spiceKey" value="${spice}" />
+        <beans:property name="spiceKey" value="${spice: }" />
     </beans:bean>
 
     <beans:bean id="jobExecutionDao" class="com.mozu.jobs.dao.JobExecutionDaoImpl">

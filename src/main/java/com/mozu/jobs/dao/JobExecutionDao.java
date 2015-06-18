@@ -13,4 +13,6 @@ public interface JobExecutionDao {
 
     Timestamp getLastExecutionDate(Long tenantId, String jobName);
 
+    Timestamp getLastExecutionDate(Long tenantId, Long siteId, String jobName);
+
 }

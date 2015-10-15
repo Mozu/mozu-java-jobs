@@ -68,8 +68,20 @@
         class="com.mozu.jobs.dao.SkipItemsDaoImpl">
         <beans:property name="dataSource" ref="springDataSource" />
     </beans:bean>
-
-    <!-- Spring Batch Admin for JMX -->
+    
+    <beans:bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
+        <beans:property name="jobExplorer" ref="jobExplorer"/>
+        <beans:property name="jobRepository" ref="jobRepository" />
+        <beans:property name="jobRegistry" ref="jobRegistry" />
+        <beans:property name="jobLauncher" ref="jobLauncher" />
+	 </beans:bean>
+	 
+	 <beans:bean name="processShutdownListener"
+    			class="com.mozu.jobs.listeners.ProcessShutdownListener">
+    	<beans:property name="jobOperator" ref="jobOperator"/>
+	</beans:bean>
+    
+   <!-- Spring Batch Admin for JMX -->
     <context:mbean-server id="mbeanServer" />
     
     <context:mbean-export default-domain="${ApplicationId}.spring.application" server="mbeanServer"/>
@@ -88,5 +100,5 @@
         <beans:property name="dataSource" ref="springDataSource" />
         <beans:property name="tablePrefix" value="SpringBatch.BATCH_" />
     </beans:bean>
-    
+  
 </beans:beans>

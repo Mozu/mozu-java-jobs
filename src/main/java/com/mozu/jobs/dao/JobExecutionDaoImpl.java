@@ -26,6 +26,13 @@ public class JobExecutionDaoImpl extends AbstractJdbcBatchMetadataDao implements
             + "JOIN SpringBatch.BATCH_JOB_INSTANCE inst on inst.JOB_INSTANCE_ID = ex.JOB_INSTANCE_ID AND inst.JOB_NAME = ? "
             + "ORDER BY ex.JOB_EXECUTION_ID DESC";
 
+    public final String LAST_SUCCESSFUL_EXECUTION_DATE_BY_SITE = "SELECT TOP 1 ex.START_TIME "
+            + "from SpringBatch.BATCH_JOB_EXECUTION ex  "
+            + "JOIN SpringBatch.BATCH_JOB_EXECUTION_PARAMS param on param.JOB_EXECUTION_ID = ex.JOB_EXECUTION_ID AND param.KEY_NAME = 'tenantId' and param.LONG_VAL = ? "
+            + "JOIN SpringBatch.BATCH_JOB_EXECUTION_PARAMS param2 on param2.JOB_EXECUTION_ID = ex.JOB_EXECUTION_ID AND param2.KEY_NAME = 'siteId' and param2.LONG_VAL = ? "
+            + "JOIN SpringBatch.BATCH_JOB_INSTANCE inst on inst.JOB_INSTANCE_ID = ex.JOB_INSTANCE_ID AND inst.JOB_NAME = ? "
+            + "ORDER BY ex.JOB_EXECUTION_ID DESC";
+
     public final String MULTI_JOB_EXECUTION_BY_TENANT = "SELECT TOP 20 ex.JOB_EXECUTION_ID "
             + "from SpringBatch.BATCH_JOB_EXECUTION ex  "
             + "JOIN SpringBatch.BATCH_JOB_EXECUTION_PARAMS param on param.JOB_EXECUTION_ID = ex.JOB_EXECUTION_ID AND param.KEY_NAME = 'tenantId' and param.LONG_VAL = ? "
@@ -59,6 +66,16 @@ public class JobExecutionDaoImpl extends AbstractJdbcBatchMetadataDao implements
 
     public Timestamp getLastExecutionDate(Long tenantId, String jobName) {
         List<Timestamp> lastTimestamps = getJdbcTemplate().queryForList(LAST_SUCCESSFUL_EXECUTION_DATE, Timestamp.class, tenantId, jobName);
+        Timestamp lastRunTimestamp = null;
+        if (lastTimestamps.size() > 0) {
+            lastRunTimestamp = lastTimestamps.get(0);
+        }
+        return lastRunTimestamp;
+    }
+
+    @Override
+    public Timestamp getLastExecutionDate(Long tenantId, Long siteId, String jobName) {
+        List<Timestamp> lastTimestamps = getJdbcTemplate().queryForList(LAST_SUCCESSFUL_EXECUTION_DATE_BY_SITE, Timestamp.class, tenantId, siteId, jobName);
         Timestamp lastRunTimestamp = null;
         if (lastTimestamps.size() > 0) {
             lastRunTimestamp = lastTimestamps.get(0);

@@ -75,12 +75,7 @@
         <beans:property name="jobRegistry" ref="jobRegistry" />
         <beans:property name="jobLauncher" ref="jobLauncher" />
 	 </beans:bean>
-	 
-	 <beans:bean name="processShutdownListener"
-    			class="com.mozu.jobs.listeners.ProcessShutdownListener">
-    	<beans:property name="jobOperator" ref="jobOperator"/>
-	</beans:bean>
-    
+	   
    <!-- Spring Batch Admin for JMX -->
     <context:mbean-server id="mbeanServer" />
     

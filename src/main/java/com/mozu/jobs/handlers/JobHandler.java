@@ -93,7 +93,7 @@ public class JobHandler {
     }
     
 
-    private JobExecution getRunningJobExecution(Long tenantId, Long siteId, String jobName) {
+    public JobExecution getRunningJobExecution(Long tenantId, Long siteId, String jobName) {
         JobExecution runningJobExecution = null;
 
         // get running jobs to see if the site is currently running
@@ -107,9 +107,10 @@ public class JobHandler {
             ||
 
             (tenantId.equals(jobParameters.getLong(TENANT_ID_PARAM)) && siteId == null)) {
-                if (!jobExecution.isStopping())
+                if (!jobExecution.isStopping()){
                     runningJobExecution = jobExecution;
-                break;
+                    break;
+                }
             }
         }
 

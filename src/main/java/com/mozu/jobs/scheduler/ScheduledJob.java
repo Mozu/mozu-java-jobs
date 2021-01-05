@@ -5,6 +5,7 @@ package com.mozu.jobs.scheduler;
 
 import java.util.Date;
 
+import com.mozu.base.utils.LoggerContextManager;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -68,6 +69,12 @@ public class ScheduledJob implements Job {
     @Override
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
+        LoggerContextManager.setApplicationLoggingContext(ScheduledJob.class.getResourceAsStream("/META-INF/MANIFEST.MF"));
+        if (siteId != null) {
+            LoggerContextManager.setTenantLoggingContext(Integer.toString(tenantId), Integer.toString(siteId));
+        } else {
+            LoggerContextManager.setTenantLoggingContext(Integer.toString(tenantId));
+        }
         logger.info("Qrtz scheduled " + jobName + " job");
         SchedulerContext schedulerContext = null;
         try {
@@ -79,6 +86,8 @@ public class ScheduledJob implements Job {
         } catch (SchedulerException e1) {
             logger.error("Error executing " + jobName + " job " + e1.getMessage() );
         }
+        LoggerContextManager.clearTenantLoggingContext();
+        LoggerContextManager.clearApplicationLoggingContext();
     }
 
     public JobParameters buildJobParams() throws JobExecutionException {

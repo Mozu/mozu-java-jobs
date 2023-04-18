@@ -14,14 +14,14 @@
     
     <beans:bean id="jobHandler" class="com.mozu.jobs.handlers.JobHandler">
     </beans:bean>
-    
-    	<beans:bean id="jobLauncher"
+
+    <beans:bean id="jobLauncher"
         class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
-        <beans:property name="jobRepository" ref="jobRepository" />
-         <beans:property name="taskExecutor">
-            <beans:bean class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
+        <beans:property name="jobRepository" ref="jobRepository"/>
+        <beans:property name="taskExecutor">
+            <beans:bean class="org.springframework.core.task.SimpleAsyncTaskExecutor"/>
         </beans:property>
-     </beans:bean>
+    </beans:bean>
 
     <beans:bean id="jobExplorer"
         class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
@@ -60,7 +60,7 @@
         <beans:property name="spiceKey" value="${spice: }" />
     </beans:bean>
 
-    <beans:bean id="jobExecutionDao" class="com.mozu.jobs.dao.JobExecutionDaoImpl">
+    <beans:bean id="jobExecutionDao" class="com.mozu.jobs.dao.JobExecutionDaoImpl" init-method="init">
         <beans:property name="dataSource" ref="springDataSource" />
     </beans:bean>
 
@@ -74,9 +74,9 @@
         <beans:property name="jobRepository" ref="jobRepository" />
         <beans:property name="jobRegistry" ref="jobRegistry" />
         <beans:property name="jobLauncher" ref="jobLauncher" />
-	 </beans:bean>
+	</beans:bean>
 	   
-   <!-- Spring Batch Admin for JMX -->
+    <!-- Spring Batch Admin for JMX -->
     <context:mbean-server id="mbeanServer" />
     
     <context:mbean-export default-domain="${ApplicationId}.spring.application" server="mbeanServer"/>
